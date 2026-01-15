@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mapper.ArticleMapper">
+
+
+    <!-- 新增文章 -->
+    <insert id="insert" parameterType="com.example.pojo.Article">
+        INSERT INTO article(title, content, user_id)
+        VALUES (#{title}, #{content}, #{userId})
+    </insert>
+
+    <!-- 根据 id 查询（⭐ 你报错的根源就在这里） -->
+    <select id="selectById" resultType="com.example.pojo.Article">
+        SELECT
+            a.id,
+            a.title,
+            a.content,
+            a.user_id AS userId,
+            a.create_time AS createTime,
+            u.username
+        FROM article a
+                 LEFT JOIN user u ON a.user_id = u.id
+        WHERE a.id = #{id}
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="selectAll" resultType="com.example.pojo.Article">
+        SELECT
+            a.id,
+            a.title,
+            a.content,
+            a.user_id AS userId,
+            a.create_time AS createTime,
+            u.username
+        FROM article a
+                 LEFT JOIN user u ON a.user_id = u.id
+        ORDER BY a.create_time DESC
+    </select>
+
+    <!-- 修改文章 -->
+    <update id="update" parameterType="com.example.pojo.Article">
+        UPDATE article
+        SET title = #{title},
+            content = #{content}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除文章 -->
+    <delete id="delete">
+        DELETE FROM article WHERE id = #{id}
+    </delete>
+
+    <!-- ⭐ 分页 + 搜索 + 多表关联 -->
+    <select id="selectPageWithUser" resultType="com.example.pojo.Article">
+        SELECT
+        a.id,
+        a.title,
+        a.content,
+        a.user_id AS userId,
+        a.create_time AS createTime,
+        u.username
+        FROM article a
+        LEFT JOIN user u ON a.user_id = u.id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                a.title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+        </where>
+        ORDER BY a.create_time DESC
+    </select>
+    <select id="selectByIdWithUser"
+            resultType="com.example.pojo.Article">
+        SELECT
+            a.id,
+            a.title,
+            a.content,
+            a.create_time AS createTime,
+            u.username
+        FROM article a
+                 LEFT JOIN user u ON a.user_id = u.id
+        WHERE a.id = #{id}
+    </select>
+
+</mapper>

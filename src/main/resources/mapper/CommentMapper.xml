@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mapper.CommentMapper">
+
+    <select id="selectByArticleId" resultType="com.example.pojo.Comment">
+        SELECT
+            c.id,
+            c.content,
+            c.article_id AS articleId,
+            c.user_id AS userId,
+            c.create_time AS createTime,
+            u.username
+        FROM comment c
+                 LEFT JOIN user u ON c.user_id = u.id
+        WHERE c.article_id = #{articleId}
+        ORDER BY c.create_time ASC
+    </select>
+
+
+
+    <insert id="insert" parameterType="com.example.pojo.Comment">
+        INSERT INTO comment(article_id, content, create_time)
+        VALUES (#{articleId}, #{content}, NOW())
+    </insert>
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM comment WHERE id = #{id}
+    </delete>
+
+
+    <select id="selectById" resultType="com.example.pojo.Comment">
+        SELECT
+            id,
+            content,
+            article_id AS articleId,
+            user_id AS userId,
+            create_time AS createTime
+        FROM comment
+        WHERE id = #{id}
+    </select>
+
+</mapper>
+
+
